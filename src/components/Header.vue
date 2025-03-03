@@ -5,7 +5,12 @@
         <li>
           <router-link to="/" class="hover:underline">Главная</router-link>
         </li>
-        <!-- Добавьте другие ссылки по мере необходимости -->
+        <li>
+          <router-link to="/days" class="hover:underline">Дни недели 📆</router-link>
+        </li>
+        <li>
+          <router-link to="/teachers" class="hover:underline">Учителя 👨‍🏫</router-link>
+        </li>
       </ul>
     </nav>
   </header>
