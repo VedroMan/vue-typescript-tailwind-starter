@@ -1,26 +1,31 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { getLessons } from "../api";
+import { getLessons, groupLessonsByDay } from "../api";
 import type { Lesson } from "../api";
 
-const lessons = ref<Lesson[]>([]);
+const lessons = ref<Record<string, Lesson[]>>({});
 
 onMounted(async () => {
-    lessons.value = await getLessons();
+    const allLessons = await getLessons();
+    lessons.value = groupLessonsByDay(allLessons);
 });
+
 </script>
 
 <template>
     <!-- header -->
-    <h1>Расписание:</h1>
+    <h1 class="text-gray-900 white:text-dark mt-5 text-base font-bold tracking-tight">Расписание уроков🗓️</h1>
     <br>
-    <div class="bg-white white:bg-gray-800 rounded-lg px-6 py-8 ring shadow-xl ring-gray-900/5">
+    <div v-for="[day, dayLessons] in Object.entries(lessons)" :key="day">
+        <h2 class="text-lg font-bold mt-4">{{ day }}</h2> <!-- Заголовок дня -->
         <ul>
-            <li v-for="lesson in lessons" :key="lesson.id" class="text-gray-900 white:text-dark mt-5 text-base font-medium tracking-tight ">
-                {{ lesson.day }}<br>
-                {{ lesson.subject }} – {{ lesson.teacher }}.<br> 
-                Время: {{ lesson.lesson_starts_time }}/{{ lesson.lesson_ends_time }}.<br>
-                Кабинет: {{ lesson.classroom }}.<br>
+            <li v-for="lesson in dayLessons" :key="lesson.id"
+                class="text-gray-900 white:text-dark mt-5 text-base font-medium tracking-tight">
+                <div class="bg-white white:bg-gray-800 rounded-lg px-6 py-4 shadow-md">
+                    <p><strong>{{ lesson.subject }}</strong> – {{ lesson.teacher }}</p>
+                    <p>⏰ Время: {{ lesson.lesson_starts_time.slice(0, 5) }} - {{ lesson.lesson_ends_time.slice(0, 5) }}</p>
+                    <p>🚪 Кабинет: {{ lesson.classroom }}</p>
+                </div>
             </li>
         </ul>
     </div>
@@ -32,9 +37,5 @@ h1 {
 ul {
   list-style-type: none;
   padding: 0;
-}
-li {
-  padding: 8px 0;
-  border-bottom: 1px solid #eee;
 }
 </style>

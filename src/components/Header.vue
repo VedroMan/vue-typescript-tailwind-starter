@@ -3,13 +3,13 @@
     <nav>
       <ul class="flex space-x-4">
         <li>
-          <router-link to="/" class="hover:underline">Главная</router-link>
+          <router-link to="/" class="hover:underline">Расписание 📚</router-link>
         </li>
         <li>
           <router-link to="/days" class="hover:underline">Дни недели 📆</router-link>
         </li>
         <li>
-          <router-link to="/teachers" class="hover:underline">Учителя 👨‍🏫</router-link>
+          <router-link to="/teachers" class="hover:underline">Учителя 👩‍🏫</router-link>
         </li>
       </ul>
     </nav>

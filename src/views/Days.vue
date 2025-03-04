@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>Дни недели 📆</h1>
+    <h1 class="text-gray-900 white:text-dark mt-5 text-base font-bold tracking-tight ">Дни недели 📆</h1>
     <ul>
       <li v-for="day in days" :key="day.id">
         {{ day.day }}

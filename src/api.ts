@@ -53,3 +53,16 @@ export async function getTeachers(): Promise<Teacher[]> {
         return [];
     }
 }
+
+export function groupLessonsByDay(lessons: Lesson[]): Record<string, Lesson[]> {
+    const grouped: Record<string, Lesson[]> = {};
+
+    lessons.forEach(lesson => {
+        if (!grouped[lesson.day]) {
+            grouped[lesson.day] = [];
+        }
+        grouped[lesson.day].push(lesson);
+    });
+
+    return grouped;
+}
