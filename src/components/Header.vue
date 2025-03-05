@@ -1,5 +1,5 @@
 <template>
-  <header class="p-4 bg-gray-800 text-white">
+  <header class="p-4 bg-blue-800 text-white">
     <nav>
       <ul class="flex space-x-4">
         <li>
