@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import Header from './components/Header.vue';
+import TabBar from './components/TabBar.vue';
 </script>
 
 <template>
   <div id="app">
-    <Header />
     <main class="p-4">
       <router-view />
     </main>
+    <TabBar/>
   </div>
 </template>
 
