@@ -7,7 +7,7 @@ import TabBar from './components/TabBar.vue';
     <main class="p-4">
       <router-view />
     </main>
-    <TabBar/>
+    <TabBar />
   </div>
 </template>
 
