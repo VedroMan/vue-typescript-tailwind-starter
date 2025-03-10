@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-const API_URL = "http://127.0.0.1:8000/api/"; // Базовый URL для API
+const API_URL = "https://4fd7n9-178-122-117-185.ru.tuna.am"; // Базовый URL для API
+console.log(import.meta.env.VITE_API_URL);
+
 
 // Валидация данных
 export interface Lesson {
@@ -26,17 +28,20 @@ export interface Teacher {
 
 export async function getLessons(): Promise<Lesson[]> {
     try {
-        const response = await axios.get<Lesson[]>(`${API_URL}lessons/`);
+        console.log("Запрос к API:", `${API_URL}/api/lessons/`);
+        const response = await axios.get<Lesson[]>(`${API_URL}/api/lessons/`);
+        console.log("Ответ API:", response.data);
         return response.data;
-    } catch(error) {
-        console.error("Ошибка загрузки уроков: ", error);
+    } catch (error) {
+        console.error("Ошибка загрузки уроков:", error);
         return [];
     }
 }
 
+
 export async function getDays(): Promise<Day[]> {
     try {
-        const response = await axios.get<Day[]>(`${API_URL}days/`);
+        const response = await axios.get<Day[]>(`${API_URL}/api/days/`);
         return response.data;
     } catch(error) {
         console.error("Ошибка загрузки дней: ", error)
@@ -46,7 +51,7 @@ export async function getDays(): Promise<Day[]> {
 
 export async function getTeachers(): Promise<Teacher[]> {
     try {
-        const response = await axios.get<Teacher[]>(`${API_URL}teachers/`);
+        const response = await axios.get<Teacher[]>(`${API_URL}/api/teachers/`);
         return response.data;
     } catch(error) {
         console.error("Ошибка загрузки учителей: ", error);

@@ -15,6 +15,6 @@ export default defineConfig({
     host: "0.0.0.0",
     port: 3000,
     cors: true,
-    origin: "https://f375-219-100-37-234.ngrok-free.app",
+    origin: "",
   },
 });
