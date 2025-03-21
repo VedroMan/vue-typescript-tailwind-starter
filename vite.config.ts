@@ -5,6 +5,7 @@ import autoprefixer from "autoprefixer";
 
 
 export default defineConfig({
+  base: "/",
   plugins: [vue()],
   css: {
     postcss: {

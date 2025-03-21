@@ -11,12 +11,15 @@
         <router-link to="/teachers" class="text-gray-600 text-white text-2xl">
             <font-awesome-icon :icon="faChalkboardTeacher" />
         </router-link>
+        <router-link to="/group-form" class="text-gray-600 text-white text-2xl">
+            <font-awesome-icon :icon="faGear" />
+        </router-link>
     </nav>
 </template>
 
 <script setup lang="ts">
 // Логика компонента
-import { faHome, faCalendar, faChalkboardTeacher } from '@fortawesome/free-solid-svg-icons';
+import { faHome, faCalendar, faChalkboardTeacher, faGear } from '@fortawesome/free-solid-svg-icons';
 
 </script>
 
