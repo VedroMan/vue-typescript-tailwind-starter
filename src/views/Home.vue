@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { getLessons, groupLessonsByDay } from "../api";
-import type { Lesson } from "../api";
+import { getLessons, groupLessonsByDay } from "../api/baseAPI";
+import type { Lesson } from "../api/schemas";
 
 const lessons = ref<Record<string, Lesson[]>>({});
 
@@ -23,7 +23,7 @@ onMounted(async () => {
                         <li v-for="lesson in dayLessons" :key="lesson.id" 
                         class="text-gray-900 white:text-dark mt-5 text-base font-medium tracking-tight">
                         <div class="bg-black dark:bg-gray-100 rounded-lg px-6 py-4 shadow-md">
-                            <p><strong>{{ lesson.subject }}</strong> – {{ lesson.teacher }}</p>
+                            <p><strong>{{ lesson.subject }}</strong> – {{ lesson.teacher.name }}</p>
                             <p>⏰ {{ lesson.lesson_starts_time.slice(0, 5) }} - {{ lesson.lesson_ends_time.slice(0, 5) }}</p>
                             <p>🚪 {{ lesson.classroom }}</p>
                         </div>

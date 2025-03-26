@@ -17,8 +17,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { getTeachers } from "../api";
-import type { Teacher } from "../api";
+import { getTeachers } from "../api/baseAPI";
+import type { Teacher } from "../api/schemas";
 
 // Создаём реактивный массив
 const teachers = ref<Teacher[]>([]);

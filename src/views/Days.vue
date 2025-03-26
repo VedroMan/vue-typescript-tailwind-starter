@@ -4,7 +4,7 @@
       <h1 class="text-gray-900 white:text-dark mt-5 text-base font-bold tracking-tight ">Дни недели 📆</h1>
       <ul>
         <li v-for="day in days" :key="day.id">
-        {{ day.day }}
+        {{ day.day_name }}
         </li>
       </ul>
     </main>
@@ -17,8 +17,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { getDays } from "../api";
-import type { Day } from "../api";
+import { getDays } from "../api/baseAPI";
+import type { Day } from "../api/schemas";
 
 // Создаём реактивный массив
 const days = ref<Day[]>([]);
