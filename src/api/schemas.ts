@@ -1,9 +1,12 @@
 /* Валидация данных */
+/* schemas.ts */
 
 export interface Group {
     id: number;
     group_name: string;
     days: string;
+
+    editing: boolean;
 }
 
 export interface Lesson {
@@ -14,14 +17,22 @@ export interface Lesson {
     classroom: string;
     subject: string;
     teacher: Teacher;
+
+    editing: boolean
 }
   
 export interface Day {
     id: number;
     day_name: string;
+    group_id: number;
+    lessons: string;
+
+    editing: boolean;
 }
   
 export interface Teacher {
     id: number;
     name: string;
+
+    editing: boolean;
 }

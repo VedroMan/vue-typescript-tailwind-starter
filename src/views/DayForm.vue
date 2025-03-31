@@ -1,103 +1,74 @@
+/* DayForm */
+
 <script setup lang="ts">
-import { faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faXmark, faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { API_URL } from "../api/baseAPI";
+import { getDays, getGroups, createDay, deleteDay, updateDay } from "../api/baseAPI";
 import { ref, onMounted } from "vue";
+import type { Day, Group } from "../api/schemas";
 
-const days = ref<{ id: number; day_name: string; group_id: number; editing: boolean }[]>([]);
-const groups = ref<{ id: number; group_name: string }[]>([]);
-const dayName = ref("");
-const selectedGroup = ref<number | null>(null);
+const days = ref<Day[]>([]);
+const groups = ref<Group[]>([]);
+const selectedDay = ref("");
+const selectedGroup = ref("");
 const message = ref("");
+const errorMessage = ref("");
+const loading = ref(false);
 
+const daysForSelect = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота"];
 
-// Загрузка дней
 const fetchDays = async () => {
   try {
-    const response = await fetch(`${API_URL}/api/days/`);
-    if (response.ok) {
-      days.value = await response.json();
-    } else {
-      console.error("Ошибка загрузки дней");
-    }
+    loading.value = true;
+    await getDays(days);
   } catch (error) {
-    console.error("Ошибка сервера при загрузке дней", error);
+    errorMessage.value = "Ошибка сервера при загрузке дней";
+  } finally {
+    loading.value = false;
   }
 };
 
-// Загрузка групп
 const fetchGroups = async () => {
   try {
-    const response = await fetch(`${API_URL}/api/groups/`);
-    if (response.ok) {
-      groups.value = await response.json();
-    } else {
-      console.error("Ошибка загрузки групп");
-    }
+    await getGroups(groups);
   } catch (error) {
-    console.error("Ошибка сервера при загрузке групп", error);
+    errorMessage.value = "Ошибка сервера при загрузке групп";
   }
 };
 
-// Добавление дня
 const addDay = async () => {
-  if (!dayName.value.trim() || !selectedGroup.value) return;
-
+  if (!selectedDay.value.trim() || !selectedGroup.value) return;
+  loading.value = true;
   try {
-    const response = await fetch(`${API_URL}/api/days/`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ day_name: dayName.value, group_id: selectedGroup.value }),
-    });
-
-    if (response.ok) {
-      message.value = "День успешно добавлен!";
-      dayName.value = "";
-      selectedGroup.value = null;
-      await fetchDays();
-    } else {
-      message.value = "Ошибка при добавлении.";
-    }
+    await createDay(selectedDay, selectedGroup, message, fetchDays);
   } catch (error) {
-    message.value = "Ошибка сервера.";
+    errorMessage.value = "Ошибка сервера";
+  } finally {
+    loading.value = false;
   }
 };
 
-// Удаление дня
-const deleteDay = async (id: number) => {
+const removeDay = async (id: number) => {
   if (!confirm("Вы уверены, что хотите удалить этот день?")) return;
-
+  loading.value = true;
   try {
-    const response = await fetch(`${API_URL}/api/days/${id}`, { method: "DELETE" });
-    if (response.ok) {
-      await fetchDays();
-    } else {
-      console.error("Ошибка удаления дня");
-    }
+    await deleteDay(id, fetchDays);
   } catch (error) {
-    console.error("Ошибка сервера при удалении", error);
+    errorMessage.value = "Ошибка сервера при удалении";
+  } finally {
+    loading.value = false;
   }
 };
 
-// Обновление дня
-const updateDay = async (day: { editing: boolean; id: number; day_name: string; group_id: number }) => {
+const editDay = async (day: Day) => {
   if (!day.day_name.trim() || !day.group_id) return;
-
+  loading.value = true;
   try {
-    const response = await fetch(`${API_URL}/api/days/${day.id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: day.id, day_name: day.day_name, group_id: day.group_id }),
-    });
-
-    if (response.ok) {
-      day.editing = false;
-      await fetchDays();
-    } else {
-      console.error("Ошибка обновления дня");
-    }
+    await updateDay(day, fetchDays);
   } catch (error) {
-    console.error("Ошибка сервера при обновлении", error);
+    errorMessage.value = "Ошибка сервера при обновлении";
+  } finally {
+    loading.value = false;
   }
 };
 
@@ -108,38 +79,49 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md">
-    <h2 class="text-xl font-bold mb-4">Управление днями</h2>
+  <div class="max-w-lg mx-auto bg-white p-6 rounded-lg shadow-md space-y-6">
+    <h2 class="text-xl font-bold">Управление днями</h2>
 
-    <!-- Форма-->
-    <div class="mb-4">
-      <input v-model="dayName" type="text" placeholder="Название дня" class="border p-2 w-full rounded" />
-      <select v-model="selectedGroup" class="border p-2 w-full rounded mt-2">
-        <option disabled value="">Выберите группу</option>
+    <div v-if="loading" class="text-center text-blue-500">Загрузка...</div>
+    <p v-if="errorMessage" class="text-red-500 text-center">{{ errorMessage }}</p>
+    <p v-if="message" class="text-green-500 text-center">{{ message }}</p>
+
+    <div class="space-y-4">
+      <label class="block text-sm font-medium text-gray-700">День</label>
+      <select v-model="selectedDay" class="border p-2 w-full rounded">
+        <option disabled value="">Выберите день</option>
+        <option v-for="(day, index) in daysForSelect" :key="index" :value="day">{{ day }}</option>
+      </select>
+
+      <label class="block text-sm font-medium text-gray-700">Группа</label>
+      <select v-model="selectedGroup" class="border p-2 w-full rounded">
+        <option disabled value="">Выберите группу для дня</option>
         <option v-for="group in groups" :key="group.id" :value="group.id">{{ group.group_name }}</option>
       </select>
-      <button @click="addDay" class="bg-blue-500 text-white px-4 py-2 rounded mt-3">Добавить</button>
-      <p v-if="message" class="mt-2 text-green-500">{{ message }}</p>
+
+      <button @click="addDay" :disabled="loading" class="w-full bg-blue-500 text-white px-4 py-2 rounded">
+        Добавить
+      </button>
     </div>
 
-    <!-- День (группа) -->
-    <ul class="space-y-2">
+    <ul class="space-y-3">
       <li v-for="day in days" :key="day.id" class="flex justify-between items-center p-2 border rounded">
-        <div v-if="day.editing">
-          <input v-model="day.day_name" class="border p-1 rounded mr-2" />
-          <!-- <select v-model="day.group_id" class="border p-1 rounded">
-            <option v-for="group in groups" :key="group.id" :value="group.id">{{ group.group_name }}</option>
-          </select> -->
-          <button @click="updateDay(day)" class="bg-green-500 text-white px-3 py-1 rounded">Сохранить</button>
-          <button @click="day.editing = false" class="ml-2 bg-gray-500 text-white px-3 py-1 rounded">Отмена</button>
+        <div v-if="day.editing" class="flex w-full gap-2">
+          <input v-model="day.day_name" class="border p-1 rounded w-2/3" />
+          <button @click="editDay(day)" :disabled="loading" class="bg-green-500 text-white px-4 py-2 rounded">
+            <font-awesome-icon :icon="faCheck" />
+          </button>
+          <button @click="day.editing = false" class="bg-gray-500 text-white px-4 py-2 rounded">
+            <font-awesome-icon :icon="faXmark" />
+          </button>
         </div>
-        <div v-else class="flex items-center justify-between w-full">
+        <div v-else class="flex justify-between w-full items-center">
           <span>{{ day.day_name }} ({{ groups.find(g => g.id === day.group_id)?.group_name || 'Неизвестно' }})</span>
-          <div class="space-x-2">
-            <button @click="day.editing = true" class="bg-yellow-500 text-white px-3 py-2 rounded">
+          <div class="flex gap-2">
+            <button @click="day.editing = true" :disabled="loading" class="bg-yellow-500 text-white px-3 py-2 rounded">
               <font-awesome-icon :icon="faPen" />
             </button>
-            <button @click="deleteDay(day.id)" class="bg-red-500 text-white px-3 py-2 rounded">
+            <button @click="removeDay(day.id)" :disabled="loading" class="bg-red-500 text-white px-3 py-2 rounded">
               <font-awesome-icon :icon="faTrash" />
             </button>
           </div>

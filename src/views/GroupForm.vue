@@ -1,143 +1,103 @@
-/* GroupForm.vue */
+/* GroupForm */
 
 <script setup lang="ts">
-import { faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faPen, faTrash, faXmark, faCheck } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-
-import { API_URL } from "../api/baseAPI";
-
+import { getGroups, createGroup, deleteGroup, updateGroup } from "../api/baseAPI";
+import type { Group } from "../api/schemas";
 import { ref, onMounted } from "vue";
 
-const groups = ref<{ id: number; group_name: string; editing: boolean }[]>([]);
+const groups = ref<Group[]>([]);
 const groupName = ref("");
 const message = ref("");
+const errorMessage = ref("");
+const loading = ref(false);
 
-// Функция для загрузки групп с сервера
 const fetchGroups = async () => {
   try {
-    const response = await fetch(`${API_URL}/api/groups/`);
-    if (response.ok) {
-      groups.value = await response.json();
-    } else {
-      console.error("Ошибка загрузки групп");
-    }
+    loading.value = true;
+    await getGroups(groups);
   } catch (error) {
-    console.error("Ошибка сервера при загрузке групп", error);
+    errorMessage.value = "Ошибка сервера при загрузке групп";
+  } finally {
+    loading.value = false;
   }
 };
 
-// Функция добавления новой группы
 const addGroup = async () => {
   if (!groupName.value.trim()) return;
-
+  loading.value = true;
   try {
-    const response = await fetch(`${API_URL}/api/groups/`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ group_name: groupName.value }),
-    });
-
-    if (response.ok) {
-      message.value = "Группа успешно добавлена!";
-      groupName.value = "";
-      await fetchGroups();
-    } else {
-      message.value = "Ошибка при добавлении.";
-    }
+    await createGroup(groupName, message, fetchGroups);
   } catch (error) {
-    message.value = "Ошибка сервера.";
+    errorMessage.value = "Ошибка сервера";
+  } finally {
+    loading.value = false;
   }
 };
 
-// Функция удаления группы
-const deleteGroup = async (id: number) => {
+const removeGroup = async (id: number) => {
   if (!confirm("Вы уверены, что хотите удалить эту группу?")) return;
-
+  loading.value = true;
   try {
-    const response = await fetch(`${API_URL}/api/groups/${id}`, {
-      method: "DELETE",
-    });
-
-    if (response.ok) {
-      await fetchGroups();
-    } else {
-      console.error("Ошибка удаления группы");
-    }
+    await deleteGroup(id, fetchGroups);
   } catch (error) {
-    console.error("Ошибка сервера при удалении", error);
+    errorMessage.value = "Ошибка сервера при удалении";
+  } finally {
+    loading.value = false;
   }
 };
 
-// Функция обновления группы
-const updateGroup = async (group: {
-  editing: boolean; 
-  id: number; 
-  group_name: string 
-}) => {
+const editGroup = async (group: Group) => {
   if (!group.group_name.trim()) return;
-
+  loading.value = true;
   try {
-    const response = await fetch(`${API_URL}/api/groups/${group.id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ 
-        id: group.id,
-        group_name: group.group_name
-       }),
-    });
-
-    if (response.ok) {
-      group.editing = false;
-      await fetchGroups();
-    } else {
-      console.error("Ошибка обновления группы");
-    }
+    await updateGroup(group, fetchGroups);
   } catch (error) {
-    console.error("Ошибка сервера при обновлении", error);
+    errorMessage.value = "Ошибка сервера при обновлении";
+  } finally {
+    loading.value = false;
   }
 };
 
-// Загружаем группы при монтировании
 onMounted(fetchGroups);
 </script>
 
 <template>
-  <div class="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md">
-    <h2 class="text-xl font-bold mb-4">Управление группами</h2>
+  <div class="max-w-lg mx-auto bg-white p-6 rounded-lg shadow-md space-y-6">
+    <h2 class="text-xl font-bold">Управление группами</h2>
 
-    <!-- Форма для добавления группы -->
-    <div class="mb-4">
-      <input
-        v-model="groupName"
-        type="text"
-        placeholder="Название группы"
-        class="border p-2 w-full rounded"
-      />
-      <button @click="addGroup" class="bg-blue-500 text-white px-4 py-2 rounded mt-3">
+    <div v-if="loading" class="text-center text-blue-500">Загрузка...</div>
+    <p v-if="errorMessage" class="text-red-500 text-center">{{ errorMessage }}</p>
+    <p v-if="message" class="text-green-500 text-center">{{ message }}</p>
+
+    <div class="space-y-4">
+      <label class="block text-sm font-medium text-gray-700">Группа</label>
+      <input v-model="groupName" class="border p-2 w-full rounded" placeholder="Введите название" />
+
+      <button @click="addGroup" :disabled="loading" class="w-full bg-blue-500 text-white px-4 py-2 rounded">
         Добавить
       </button>
-      <p v-if="message" class="mt-2 text-green-500">{{ message }}</p>
     </div>
 
-    <!-- Список групп -->
-    <ul class="space-y-2">
+    <ul class="space-y-3">
       <li v-for="group in groups" :key="group.id" class="flex justify-between items-center p-2 border rounded">
-        <div v-if="group.editing">
-          <input v-model="group.group_name" class="border p-1 rounded mr-2" />
-          <button @click="updateGroup(group)" class="bg-green-500 text-white px-3 py-1 rounded">
-            Сохранить
+        <div v-if="group.editing" class="flex w-full gap-2">
+          <input v-model="group.group_name" class="border p-1 rounded w-2/3" />
+          <button @click="editGroup(group)" :disabled="loading" class="bg-green-500 text-white px-4 py-2 rounded">
+            <font-awesome-icon :icon="faCheck" />
           </button>
-          <button @click="group.editing = false" class="ml-2 bg-gray-500 text-white px-3 py-1 rounded">
-            Отмена
+          <button @click="group.editing = false" class="bg-gray-500 text-white px-4 py-2 rounded">
+            <font-awesome-icon :icon="faXmark" />
           </button>
         </div>
-        <div v-else class="flex items-center justify-between w-full">
+        <div v-else class="flex justify-between w-full items-center">
           <span>{{ group.group_name }}</span>
-          <div class="space-x-2">
-            <button @click="group.editing = true" class="bg-yellow-500 text-white px-3 py-2 rounded">
+          <div class="flex gap-2">
+            <button @click="group.editing = true" :disabled="loading" class="bg-yellow-500 text-white px-3 py-2 rounded">
               <font-awesome-icon :icon="faPen" />
             </button>
-            <button @click="deleteGroup(group.id)" class="bg-red-500 text-white px-3 py-2 rounded">
+            <button @click="removeGroup(group.id)" :disabled="loading" class="bg-red-500 text-white px-3 py-2 rounded">
               <font-awesome-icon :icon="faTrash" />
             </button>
           </div>

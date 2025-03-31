@@ -1,166 +1,322 @@
 /* CRUD операции с API */
+/* api.ts */
 
-import axios from 'axios';
 import type { Day, Lesson, Teacher, Group } from './schemas';
+import { API_URL, contentType } from '../config';
 
-export const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:5005";
+/* MARK: Группы */
 
-/* Группы */
-
-export async function getGroups(): Promise<Group[]> {
-    try {
-        const response = await axios.get<Group[]>(`${API_URL}/api/groups`);
-        return response.data;
-    } catch (error) {
-        console.error("Ошибка загрузки групп:", error);
-        return [];
+export const getGroups = async (
+  groups: { value: Group[] }
+) => {
+    const response = await fetch(`${API_URL}/api/groups/`);
+    if (response.ok) {
+        groups.value = await response.json();
+    } else {
+        throw new Error("Ошибка загрузки групп");
     }
+};
+  
+export const createGroup = async (
+  groupName: { value: string },
+  message: { value: string },
+  getGroups: () => Promise<void>
+) => {
+  const response = await fetch(`${API_URL}/api/groups/`, {
+    method: "POST",
+    headers: contentType,
+    body: JSON.stringify({ group_name: groupName.value }),
+  });
+
+  if (response.ok) {
+    message.value = "Группа успешно добавлена!";
+    setTimeout(() => (message.value = ""), 3000);
+    groupName.value = "";
+    await getGroups();
+  } else {
+    throw new Error("Ошибка при добавлении");
+  }
+};
+  
+export const deleteGroup = async (
+  id: number,
+  getGroups: () => Promise<void>
+) => {
+  const response = await fetch(`${API_URL}/api/groups/${id}`, { method: "DELETE" });
+  if (response.ok) {
+    await getGroups();
+  } else {
+    throw new Error("Ошибка удаления группы");
+  }
+};
+  
+export const updateGroup = async (
+  group: Group,
+  getGroups: () => Promise<void>
+) => {
+  const response = await fetch(`${API_URL}/api/groups/${group.id}`, {
+    method: "PUT",
+    headers: contentType,
+    body: JSON.stringify({ id: group.id, group_name: group.group_name }),
+  });
+  if (response.ok) {
+    group.editing = false;
+    await getGroups();
+  } else {
+    throw new Error("Ошибка обновления группы");
+  }
+};
+
+/* MARK: Дни */
+
+export const getDays = async (
+  days: { value: Day[] }
+) => {
+  const response = await fetch(`${API_URL}/api/days/`);
+  if (response.ok) { 
+    days.value = await response.json();
+  } else {
+    throw new Error("Ошибка загрузки дней");
+  }
+};
+  
+export const createDay = async (
+  dayName: { value: string },
+  group: { value: string },
+  message: { value: string },
+  getDays: () => Promise<void>
+) => {
+  const response = await fetch(`${API_URL}/api/days/`, {
+    method: "POST",
+    headers: contentType,
+    body: JSON.stringify({ day_name: dayName.value, group_id: group.value }),
+  });
+
+  if (response.ok) {
+    message.value = "День успешно добавлен!";
+    setTimeout(() => (message.value = ""), 3000);
+    dayName.value = "";
+    group.value = "";
+    await getDays();
+  } else {
+    throw new Error("Ошибка при добавлении");
+  }
+};
+  
+export const deleteDay = async (
+  id: number,
+  getDays: () => Promise<void>
+) => {
+  const response = await fetch(`${API_URL}/api/days/${id}`, { method: "DELETE" });
+  if (response.ok) {
+    await getDays();
+  } else {
+    throw new Error("Ошибка удаления дня");
+  }
+};
+  
+export const updateDay = async (
+  day: Day,
+  getDays: () => Promise<void>
+) => {
+  const response = await fetch(`${API_URL}/api/days/${day.id}`, {
+    method: "PUT",
+    headers: contentType,
+    body: JSON.stringify({ id: day.id, day_name: day.day_name, group_id: day.group_id }),
+  });
+
+  if (response.ok) {
+    day.editing = false;
+    await getDays();
+  } else {
+    throw new Error("Ошибка обновления дня");
+  }
+};
+
+// Фильтрация дней по группе
+
+
+/* MARK: Педагоги */
+
+export const getTeachers = async (
+  teachers: { value: Teacher[] }
+) => {
+  const response = await fetch(`${API_URL}/api/teachers/`);
+  if (response.ok) {
+    teachers.value = await response.json();
+  } else {
+    throw new Error("Ошибка загрузки учителей");
+  }
+};
+  
+export const createTeacher = async (
+  teacherName: { value: string },
+  message: { value: string },
+  getTeachers: () => Promise<void>
+) => {
+  const response = await fetch(`${API_URL}/api/teachers/`, {
+    method: "POST",
+    headers: contentType,
+    body: JSON.stringify({ name: teacherName.value }),
+  });
+  if (response.ok) {
+    message.value = "Учитель успешно добавлен!";
+    setTimeout(() => (message.value = ""), 3000);
+    teacherName.value = "";
+    await getTeachers();
+  } else {
+    throw new Error("Ошибка при добавлении");
+  }
+};
+  
+export const deleteTeacher = async (
+  id: number,
+  getTeachers: () => Promise<void>
+) => {
+  const response = await fetch(`${API_URL}/api/teachers/${id}`, { method: "DELETE" });
+  if (response.ok) {
+    await getTeachers();
+  } else {
+    throw new Error("Ошибка удаления учителя");
+  }
+};
+  
+export const updateTeacher = async (
+  teacher: Teacher,
+  getTeachers: () => Promise<void>
+) => {
+  const response = await fetch(`${API_URL}/api/teachers/${teacher.id}`, {
+    method: "PUT",
+    headers: contentType,
+    body: JSON.stringify({ id: teacher.id, name: teacher.name }),
+  });
+
+  if (response.ok) {
+    teacher.editing = false;
+    await getTeachers();
+  } else {
+    throw new Error("Ошибка обновления учителя");
+  }
+};
+
+/* MARK: Уроки */
+
+export const getLessons = async (
+  lessons: { value: Lesson[] }
+) => {
+  const response = await fetch(`${API_URL}/api/lessons/`);
+  if (response.ok) {
+    lessons.value = await response.json();
+  } else {
+    throw new Error("Ошибка получения уроков")
+  }
 }
 
-export async function createGroup(group: string) {
-    try {
-        await axios.post(`${API_URL}/api/groups`, { group_name: group });
-    } catch (error) {
-        console.error("Ошибка создания группы:", error);
+export const createLesson = async (
+  subject: { value: string },
+  classroom: { value: string },
+  lessonStartsTime: { value: string },
+  lessonEndsTime: { value: string },
+  day: { value: string },
+  teacher: { value: string },
+  message: { value: string },
+
+  getLessons: () => Promise<void>
+) => {
+  const response = await fetch(`${API_URL}/api/lessons/`, {
+    method: "POST",
+    headers: contentType,
+    body: JSON.stringify(
+      { day_id: day.value,
+        subject: subject.value, 
+        lesson_starts_time: lessonStartsTime.value,
+        lesson_ends_time: lessonEndsTime.value,
+        classroom: classroom.value,
+        teacher_id: teacher.value
+      })
+  });
+
+  if (response.ok) {
+    message.value = "Урок успешно добавлен!";
+    setTimeout(() => (message.value = ""), 3000);
+    subject.value = "";
+    day.value = "";
+    classroom.value = "";
+    lessonStartsTime.value = "";
+    lessonEndsTime.value = "";
+    day.value = "";
+    teacher.value = "";
+    await getLessons();
+  } else {
+    throw new Error("Ошибка при добавлении");
+  }
+};
+
+export const deleteLesson = async (
+  id: number,
+  getLessons: () => Promise<void>
+) => {
+  const response = await fetch(`${API_URL}/api/lessons/${id}`, {
+    method: "DELETE",
+  });
+
+  if (response.ok) {
+    await getLessons();
+  } else {
+    throw new Error("Ошибка удаления урока");
+  }
+};
+
+export const updateLesson = async (
+  lesson: Lesson,
+  getLessons: () => Promise<void>
+) => {
+  const response = await fetch(`${API_URL}/api/lessons/${lesson.id}`, {
+    method: "PUT",
+    headers: contentType,
+    body: JSON.stringify(
+      {
+        day_id: lesson.day.id,
+        subject: lesson.subject, 
+        lesson_starts_time: lesson.lesson_starts_time,
+        lesson_ends_time: lesson.lesson_ends_time,
+        classroom: lesson.classroom,
+        teacher_id: lesson.teacher.id
+    }),
+  });
+
+  if (response.ok) {
+    lesson.editing = false;
+    await getLessons();
+  } else {
+    throw new Error("Ошибка обновления урока");
+  }
+};
+
+/* Группировка уроков по дням недели */
+// в последующем комите буду фильтровать уже на беке(временный костыль):)
+
+export const getLessonsForDayFilter = async (): Promise<Lesson[]> => {
+  const response = await fetch(`${API_URL}/api/lessons/`);
+  if (response.ok) {
+    return await response.json();
+  } else {
+    throw new Error("Ошибка загрузки уроков");
+  }
+};
+
+/* фильтр для группировки */
+
+export const filterLessonsByDay = (lessons: Lesson[]): Record<string, Lesson[]> => {
+  const filteredLessons: Record<string, Lesson[]> = {};
+
+  lessons.forEach((lesson) => {
+    const dayName = lesson.day.day_name;
+    if (!filteredLessons[dayName]) {
+        filteredLessons[dayName] = [];
     }
-}
+    filteredLessons[dayName].push(lesson);
+  });
 
-export async function updateGroup(id: number, group: string) {
-    try {
-        await axios.put(`${API_URL}/api/groups/${id}`, { group_name: group });
-    } catch (error) {
-        console.error("Ошибка изменения группы:", error);
-    }
-}
-
-export async function deleteGroup(id: number) {
-    try {
-        await axios.delete(`${API_URL}/api/groups/${id}`);
-    } catch (error) {
-        console.error("Ошибка удаления группы:", error); 
-    }
-}
-
-/* Дни */
-
-export async function getDays(): Promise<Day[]> {
-    try {
-        const response = await axios.get<Day[]>(`${API_URL}/api/days`);
-        return response.data;
-    } catch(error) {
-        console.error("Ошибка загрузки дней: ", error);
-        return [];
-    }
-}
-
-export async function createDay(day: string) {
-    try {
-        await axios.post(`${API_URL}/api/days`, { day_name: day });
-    } catch (error) {
-        console.error("Ошибка создания дня:", error);
-    }
-}
-
-export async function updateDay(id: number, day: string) {
-    try {
-        await axios.put(`${API_URL}/api/days/${id}`, { day_name: day });
-    } catch (error) {
-        console.error("Ошибка изменения дня:", error);
-    }
-}
-
-export async function deleteDay(id: number) {
-    try {
-        await axios.delete(`${API_URL}/api/days/${id}`);
-    } catch (error) {
-        console.error("Ошибка удаления дня:", error);
-    }
-}
-
-/* Учителя */
-
-export async function getTeachers(): Promise<Teacher[]> {
-    try {
-        const response = await axios.get<Teacher[]>(`${API_URL}/api/teachers`);
-        return response.data;
-    } catch(error) {
-        console.error("Ошибка загрузки учителей: ", error);
-        return [];
-    }
-}
-
-export async function createTeacher(name: string) {
-    try {
-        await axios.post(`${API_URL}/api/teachers`, { name: name });
-    } catch (error) {
-        console.error("Ошибка создания учителя: ", error);
-    }
-}
-
-export async function updateTeacher(id: number, name: string) {
-    try {
-        await axios.put(`${API_URL}/api/teachers/${id}`, { name: name });
-    } catch (error) {
-        console.error("Ошибка изменения учителя: ", error);
-    }
-}
-
-export async function deleteTeacher(id: number) {
-    try {
-        await axios.delete(`${API_URL}/api/teachers/${id}`);
-    } catch (error) {
-        console.error("Ошибка удаления учителя:", error);
-    }
-}
-
-/* Уроки */
-
-export async function getLessons(): Promise<Lesson[]> {
-    try {
-        const response = await axios.get<Lesson[]>(`${API_URL}/api/lessons`);
-        return response.data;
-    } catch (error) {
-        console.error("Ошибка загрузки уроков:", error);
-        return [];
-    }
-}
-
-export async function createLesson(lesson: Lesson) {
-    try {
-        await axios.post(`${API_URL}/api/lessons`, lesson);
-    } catch (error) {
-        console.error("Ошибка создания урока:", error);
-    }
-}
-
-export async function updateLesson(id: number, lesson: Lesson) {
-    try {
-        await axios.put(`${API_URL}/api/lessons/${id}`, lesson);   
-    } catch (error) {
-        console.error("Ошибка изменения урока:", error);
-    }
-}
-
-export async function deleteLesson(id: number) {
-    try {
-        await axios.delete(`${API_URL}/api/lessons/${id}`);
-    } catch (error) {
-        console.error("Ошибка удаления урока", error);
-    }
-}
-
-
-export function groupLessonsByDay(lessons: Lesson[]): Record<string, Lesson[]> {
-    const grouped: Record<string, Lesson[]> = {};
-
-    lessons.forEach(lesson => {
-        const dayName = lesson.day.day_name;
-
-        if (!grouped[dayName]) {
-            grouped[dayName] = [];
-        }
-        grouped[dayName].push(lesson);
-    });
-
-    return grouped;
-}
+  return filteredLessons;
+};
