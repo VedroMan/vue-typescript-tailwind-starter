@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { faPen, faTrash, faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faPen, faTrash} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { getDays, getTeachers, getLessons, createLesson, deleteLesson, updateLesson } from "../api/baseAPI";
 import { ref, onMounted, computed } from "vue";
