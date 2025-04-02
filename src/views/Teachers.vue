@@ -1,5 +1,5 @@
 <template>
-  <h1 class="text-gray-900 white:text-dark mt-5 text-base font-bold tracking-tight ">Учителя 👩‍🏫</h1>
+  <h1 class="text-gray-900 white:text-dark mt-5 text-base font-bold tracking-tight ">Преподаватели 👩‍🏫</h1>
     <ul>
       <li v-for="teacher in teachers" :key="teacher.id">
         {{ teacher.name }}

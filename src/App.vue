@@ -1,5 +1,12 @@
 <script setup lang="ts">
+import { computed } from "vue";
+import { useRoute } from "vue-router";
 import TabBar from './components/TabBar.vue';
+import AdminBar from "./components/AdminBar.vue";
+
+const route = useRoute();
+
+const isAdminPage = computed(() => route.path.startsWith("/admin"));
 </script>
 
 <template>
@@ -14,7 +21,8 @@ import TabBar from './components/TabBar.vue';
         <p>Produced by Tim Zykov</p>
       </footer>
     </main>
-    <TabBar />
+    <TabBar v-if="!isAdminPage" />
+    <AdminBar v-if="isAdminPage" />
   </div>
 </template>
 

@@ -18,7 +18,7 @@ const fetchTeachers = async () => {
     loading.value = true;
     await getTeachers(teachers);
   } catch (error) {
-    errorMessage.value = "Ошибка сервера при загрузке учителей";
+    errorMessage.value = "Ошибка сервера при загрузке преподавателей";
   } finally {
     loading.value = false;
   }
@@ -65,14 +65,14 @@ onMounted(fetchTeachers);
 
 <template>
   <div class="max-w-lg mx-auto bg-white p-6 rounded-lg shadow-md space-y-6">
-    <h2 class="text-xl font-bold">Управление учителями</h2>
+    <h2 class="text-xl font-bold">Управление преподавателями</h2>
 
     <div v-if="loading" class="text-center text-blue-500">Загрузка...</div>
     <p v-if="errorMessage" class="text-red-500 text-center">{{ errorMessage }}</p>
     <p v-if="message" class="text-green-500 text-center">{{ message }}</p>
 
     <div class="space-y-4">
-      <label class="block text-sm font-medium text-gray-700">Имя учителя</label>
+      <label class="block text-sm font-medium text-gray-700">Имя преподавателя</label>
       <input v-model="teacherName" class="border p-2 w-full rounded" placeholder="Введите имя" />
 
       <button @click="addTeacher" :disabled="loading" class="w-full bg-blue-500 text-white px-4 py-2 rounded">

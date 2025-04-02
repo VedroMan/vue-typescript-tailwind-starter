@@ -75,10 +75,10 @@ const addLesson = async () => {
     return;
   }
 
-  if (classroom.value == "") {
-    classroom.value = "Отсутствует";
+  if (classroom.value === "") {
+    classroom.value = "Отсутсвует";
     return;
-  } 
+  }
 
   loading.value = true;
   try {
@@ -156,9 +156,9 @@ onMounted(async () => {
         </option>
       </select>
 
-      <label class="block text-sm font-medium text-gray-700">Учитель</label>
+      <label class="block text-sm font-medium text-gray-700">Преподаватель</label>
       <select v-model="selectedTeacher" class="border p-2 w-full rounded">
-        <option disabled value="">Выберите учителя</option>
+        <option disabled value="">Выберите преподавателя</option>
         <option v-for="teacher in teachers" :key="teacher.id" :value="teacher.id">
           {{ teacher.name }}
         </option>
@@ -190,7 +190,7 @@ onMounted(async () => {
           ({{ lesson.lesson_starts_time.slice(0, 5) }} - {{ lesson.lesson_ends_time.slice(0, 5) }}) - {{ lesson.classroom }}
         </span>
         <div class="flex gap-2">
-          <button @click="lesson.editing = true" :disabled="loading" class="bg-yellow-500 text-white px-3 py-2 rounded">
+          <button @click="editLesson(lesson)" :disabled="loading" class="bg-yellow-500 text-white px-3 py-2 rounded">
             <font-awesome-icon :icon="faPen" />
           </button>
           <button @click="removeLesson(lesson.id)" :disabled="loading" class="bg-red-500 text-white px-3 py-2 rounded">

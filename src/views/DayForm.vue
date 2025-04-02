@@ -129,4 +129,5 @@ onMounted(async () => {
       </li>
     </ul>
   </div>
+  <AdminBar />
 </template>
