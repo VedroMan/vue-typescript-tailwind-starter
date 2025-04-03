@@ -210,7 +210,33 @@ export const getLessons = async (
   } else {
     throw new Error("Ошибка получения уроков")
   }
-}
+};
+
+// уроки по дню
+
+export const getLessonsByDay = async (
+  id: number
+) => {
+  const response = await fetch(`${API_URL}/api/lessons/day/${id}`);
+  if (response.ok) {
+    return await response.json();
+  } else {
+    throw new Error("Ошибка получения уроков по дню");
+  }
+};
+
+// уроки по преподу
+
+export const getLessonsByTeacher = async (
+  id: number
+) => {
+  const response = await fetch(`${API_URL}/api/lessons/teacher/${id}`);
+  if (response.ok) {
+    return await response.json();
+  } else {
+    throw new Error("Ошибка получения уроков по преподавателю");
+  }
+};
 
 export const createLesson = async (
   subject: { value: string },
