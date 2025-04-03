@@ -27,9 +27,9 @@
         <p v-if="errorMessage" class="text-red-500 text-sm mt-3 text-center">{{ errorMessage }}</p>
       </div>
     </div>
-  </template>
+</template>
   
-  <script setup lang="ts">
+<script setup lang="ts">
   import { ref } from "vue";
   import { useRouter } from "vue-router";
   import { ADMIN_PASS } from "../config";
@@ -47,5 +47,5 @@
       password.value = "";
     }
   };
-  </script>
+</script>
   

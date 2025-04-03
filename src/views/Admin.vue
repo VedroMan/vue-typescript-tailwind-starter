@@ -6,7 +6,7 @@
       Добро пожаловать в Админ-панель 👩‍💻
     </h1>
     <p class="text-gray-800 dark:text-gray-400 mt-3 text-lg pb-10">
-      Здесь можно управлять группами, днями, преподавателями и уроками.<br>
+      Здесь можно управлять группами, днями, преподавателями и уроками.<br />
       Индивидуальными занятими(в разработке).
     </p>
 
@@ -26,7 +26,9 @@
     </div>
     <button 
     @click="logout" 
-    class="absolute top-5 right-5 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition">🚪 Выйти</button>
+    class="absolute top-5 right-5 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition duration-300 hover:scale-105">
+    🚪 Выйти
+    </button>
 
     <div class="mt-10 p-6 bg-gray-100 light:bg-gray-800 rounded-lg shadow">
       <h2 class="text-gray-900 dark:text-black text-xl font-bold">Подсказка</h2>
