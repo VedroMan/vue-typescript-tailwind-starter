@@ -2,14 +2,13 @@
 /* api.ts */
 
 import type { Day, Lesson, Teacher, Group } from './schemas';
-import { API_URL, contentType } from '../config';
 
 /* MARK: Группы */
 
 export const getGroups = async (
   groups: { value: Group[] }
 ) => {
-    const response = await fetch(`${API_URL}/api/groups/`);
+    const response = await fetch(`/api/groups/`);
     if (response.ok) {
         groups.value = await response.json();
     } else {
@@ -22,9 +21,9 @@ export const createGroup = async (
   message: { value: string },
   getGroups: () => Promise<void>
 ) => {
-  const response = await fetch(`${API_URL}/api/groups/`, {
+  const response = await fetch(`/api/groups/`, {
     method: "POST",
-    headers: contentType,
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ group_name: groupName.value }),
   });
 
@@ -42,7 +41,7 @@ export const deleteGroup = async (
   id: number,
   getGroups: () => Promise<void>
 ) => {
-  const response = await fetch(`${API_URL}/api/groups/${id}`, { method: "DELETE" });
+  const response = await fetch(`/api/groups/${id}`, { method: "DELETE" });
   if (response.ok) {
     await getGroups();
   } else {
@@ -54,9 +53,9 @@ export const updateGroup = async (
   group: Group,
   getGroups: () => Promise<void>
 ) => {
-  const response = await fetch(`${API_URL}/api/groups/${group.id}`, {
+  const response = await fetch(`/api/groups/${group.id}`, {
     method: "PUT",
-    headers: contentType,
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ id: group.id, group_name: group.group_name }),
   });
   if (response.ok) {
@@ -72,7 +71,7 @@ export const updateGroup = async (
 export const getDays = async (
   days: { value: Day[] }
 ) => {
-  const response = await fetch(`${API_URL}/api/days/`);
+  const response = await fetch(`/api/days/`);
   if (response.ok) { 
     days.value = await response.json();
   } else {
@@ -86,9 +85,9 @@ export const createDay = async (
   message: { value: string },
   getDays: () => Promise<void>
 ) => {
-  const response = await fetch(`${API_URL}/api/days/`, {
+  const response = await fetch(`/api/days/`, {
     method: "POST",
-    headers: contentType,
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ day_name: dayName.value, group_id: group.value }),
   });
 
@@ -107,7 +106,7 @@ export const deleteDay = async (
   id: number,
   getDays: () => Promise<void>
 ) => {
-  const response = await fetch(`${API_URL}/api/days/${id}`, { method: "DELETE" });
+  const response = await fetch(`/api/days/${id}`, { method: "DELETE" });
   if (response.ok) {
     await getDays();
   } else {
@@ -119,9 +118,9 @@ export const updateDay = async (
   day: Day,
   getDays: () => Promise<void>
 ) => {
-  const response = await fetch(`${API_URL}/api/days/${day.id}`, {
+  const response = await fetch(`/api/days/${day.id}`, {
     method: "PUT",
-    headers: contentType,
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ id: day.id, day_name: day.day_name, group_id: day.group_id }),
   });
 
@@ -133,15 +132,12 @@ export const updateDay = async (
   }
 };
 
-// Фильтрация дней по группе
-
-
 /* MARK: Педагоги */
 
 export const getTeachers = async (
   teachers: { value: Teacher[] }
 ) => {
-  const response = await fetch(`${API_URL}/api/teachers/`);
+  const response = await fetch(`/api/teachers/`);
   if (response.ok) {
     teachers.value = await response.json();
   } else {
@@ -154,9 +150,9 @@ export const createTeacher = async (
   message: { value: string },
   getTeachers: () => Promise<void>
 ) => {
-  const response = await fetch(`${API_URL}/api/teachers/`, {
+  const response = await fetch(`/api/teachers/`, {
     method: "POST",
-    headers: contentType,
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ name: teacherName.value }),
   });
   if (response.ok) {
@@ -173,7 +169,7 @@ export const deleteTeacher = async (
   id: number,
   getTeachers: () => Promise<void>
 ) => {
-  const response = await fetch(`${API_URL}/api/teachers/${id}`, { method: "DELETE" });
+  const response = await fetch(`/api/teachers/${id}`, { method: "DELETE" });
   if (response.ok) {
     await getTeachers();
   } else {
@@ -185,9 +181,9 @@ export const updateTeacher = async (
   teacher: Teacher,
   getTeachers: () => Promise<void>
 ) => {
-  const response = await fetch(`${API_URL}/api/teachers/${teacher.id}`, {
+  const response = await fetch(`/api/teachers/${teacher.id}`, {
     method: "PUT",
-    headers: contentType,
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ id: teacher.id, name: teacher.name }),
   });
 
@@ -204,7 +200,7 @@ export const updateTeacher = async (
 export const getLessons = async (
   lessons: { value: Lesson[] }
 ) => {
-  const response = await fetch(`${API_URL}/api/lessons/`);
+  const response = await fetch(`/api/lessons/`);
   if (response.ok) {
     lessons.value = await response.json();
   } else {
@@ -212,12 +208,10 @@ export const getLessons = async (
   }
 };
 
-// уроки по дню
-
 export const getLessonsByDay = async (
   id: number
 ) => {
-  const response = await fetch(`${API_URL}/api/lessons/day/${id}`);
+  const response = await fetch(`/api/lessons/day/${id}`);
   if (response.ok) {
     return await response.json();
   } else {
@@ -225,12 +219,10 @@ export const getLessonsByDay = async (
   }
 };
 
-// уроки по преподу
-
 export const getLessonsByTeacher = async (
   id: number
 ) => {
-  const response = await fetch(`${API_URL}/api/lessons/teacher/${id}`);
+  const response = await fetch(`/api/lessons/teacher/${id}`);
   if (response.ok) {
     return await response.json();
   } else {
@@ -245,13 +237,12 @@ export const createLesson = async (
   lessonEndsTime: { value: string },
   day: { value: string },
   teacher: { value: string },
-  message: { value: string },
-
+  message: { value: string },  
   getLessons: () => Promise<void>
 ) => {
-  const response = await fetch(`${API_URL}/api/lessons/`, {
+  const response = await fetch(`/api/lessons/`, {
     method: "POST",
-    headers: contentType,
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(
       { day_id: day.value,
         subject: subject.value, 
@@ -282,7 +273,7 @@ export const deleteLesson = async (
   id: number,
   getLessons: () => Promise<void>
 ) => {
-  const response = await fetch(`${API_URL}/api/lessons/${id}`, {
+  const response = await fetch(`/api/lessons/${id}`, {
     method: "DELETE",
   });
 
@@ -297,9 +288,9 @@ export const updateLesson = async (
   lesson: Lesson,
   getLessons: () => Promise<void>
 ) => {
-  const response = await fetch(`${API_URL}/api/lessons/${lesson.id}`, {
+  const response = await fetch(`/api/lessons/${lesson.id}`, {
     method: "PUT",
-    headers: contentType,
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(
       {
         day_id: lesson.day.id,
@@ -319,19 +310,14 @@ export const updateLesson = async (
   }
 };
 
-/* Группировка уроков по дням недели */
-// в последующем комите буду фильтровать уже на беке(временный костыль):)
-
 export const getLessonsForDayFilter = async (): Promise<Lesson[]> => {
-  const response = await fetch(`${API_URL}/api/lessons/`);
+  const response = await fetch(`/api/lessons/`);
   if (response.ok) {
     return await response.json();
   } else {
     throw new Error("Ошибка загрузки уроков");
   }
 };
-
-/* фильтр для группировки */
 
 export const filterLessonsByDay = (lessons: Lesson[]): Record<string, Lesson[]> => {
   const filteredLessons: Record<string, Lesson[]> = {};
