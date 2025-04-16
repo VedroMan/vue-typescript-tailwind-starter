@@ -293,12 +293,13 @@ export const updateLesson = async (
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(
       {
-        day_id: lesson.day.id,
+        id: lesson.id,
         subject: lesson.subject, 
         lesson_starts_time: lesson.lesson_starts_time,
         lesson_ends_time: lesson.lesson_ends_time,
         classroom: lesson.classroom,
-        teacher_id: lesson.teacher.id
+        teacher_id: lesson.teacher.id,
+        day_id: lesson.day.id
     }),
   });
 

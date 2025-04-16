@@ -18,7 +18,10 @@ const isAdminPage = computed(() => route.path.startsWith("/admin"));
         </main>
       </div>
       <footer class="text-gray-400 white:text-dark mt-10 mb-10 text-xs py-4 font-medium tracking-tight text-center">
-        <p>Produced by Tim Zykov</p>
+        <p>
+          a Tim Zykov production<br />
+          @gumcol
+        </p>
       </footer>
     </main>
     <TabBar v-if="!isAdminPage" />
