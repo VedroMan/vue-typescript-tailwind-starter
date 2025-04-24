@@ -195,99 +195,154 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="max-w-lg mx-auto bg-white p-6 rounded-lg shadow-md space-y-6">
-    <h2 class="text-xl font-bold">Управление занятиями</h2>
+  <div class="max-w-5xl mx-auto px-4 py-10">
+    <h2 class="text-3xl font-bold text-center text-gray-900 mb-4">📚 Управление занятиями</h2>
 
-    <div v-if="loading" class="text-center text-blue-500">Загрузка...</div>
-    <p v-if="errorMessage" class="text-red-500 text-center">{{ errorMessage }}</p>
-    <p v-if="message" class="text-green-500 text-center">{{ message }}</p>
+    <div v-if="loading" class="text-center text-blue-500 text-lg animate-pulse mb-4">Загрузка данных...</div>
+    <p v-if="errorMessage" class="text-center text-red-600 text-lg mb-4">{{ errorMessage }}</p>
+    <p v-if="message" class="text-center text-green-600 text-lg mb-4">{{ message }}</p>
 
-    <div class="space-y-4">
-      <label class="block text-sm font-medium text-gray-700">Предмет</label>
-      <select v-model="selectedSubject" class="border p-2 w-full rounded">
-        <option disabled value="">Выберите предмет</option>
-        <option v-for="subject in subjects" :key="subject" :value="subject">{{ subject }}</option>
-      </select>
+    <!-- Блок добавления урока -->
+    <div class="bg-white border rounded-lg shadow p-6 mb-10 space-y-4">
+      <h3 class="text-xl font-semibold text-gray-800">Форма для заполнения</h3>
 
-      <label class="block text-sm font-medium text-gray-700">День</label>
-      <select v-model="selectedDay" class="border p-2 w-full rounded">
-        <option disabled value="">Выберите день</option>
-        <option v-for="day in days" :key="day.id" :value="day.id">{{ day.day_name }}</option>
-      </select>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="text-sm text-gray-600">Предмет</label>
+          <select v-model="selectedSubject" class="w-full border rounded p-2">
+            <option disabled value="">Выберите предмет</option>
+            <option v-for="subject in subjects" :key="subject" :value="subject">{{ subject }}</option>
+          </select>
+        </div>
 
-      <label class="block text-sm font-medium text-gray-700">Преподаватель</label>
-      <select v-model="selectedTeacher" class="border p-2 w-full rounded">
-        <option disabled value="">Выберите преподавателя</option>
-        <option v-for="teacher in teachers" :key="teacher.id" :value="teacher.id">{{ teacher.name }}</option>
-      </select>
+        <div>
+          <label class="text-sm text-gray-600">День</label>
+          <select v-model="selectedDay" class="w-full border rounded p-2">
+            <option disabled value="">Выберите день</option>
+            <option v-for="day in days" :key="day.id" :value="day.id">{{ day.day_name }}</option>
+          </select>
+        </div>
 
-      <label class="block text-sm font-medium text-gray-700">Время начала</label>
-      <select v-model="selectedStartTime" class="border p-2 w-full rounded">
-        <option disabled value="">Выберите время</option>
-        <option v-for="time in startTimes" :key="time" :value="time">{{ time }}</option>
-      </select>
-      <p>Время окончания: <strong>{{ calculateEndTime }}</strong></p>
+        <div>
+          <label class="text-sm text-gray-600">Преподаватель</label>
+          <select v-model="selectedTeacher" class="w-full border rounded p-2">
+            <option disabled value="">Выберите преподавателя</option>
+            <option v-for="teacher in teachers" :key="teacher.id" :value="teacher.id">{{ teacher.name }}</option>
+          </select>
+        </div>
 
-      <label class="block text-sm font-medium text-gray-700">Кабинет</label>
-      <input v-model="classroom" class="border p-2 w-full rounded" placeholder="Введите кабинет" />
+        <div>
+          <label class="text-sm text-gray-600">Время начала</label>
+          <select v-model="selectedStartTime" class="w-full border rounded p-2">
+            <option disabled value="">Выберите время</option>
+            <option v-for="time in startTimes" :key="time" :value="time">{{ time }}</option>
+          </select>
+          <p class="text-sm text-gray-500 mt-1">Время окончания: <strong>{{ calculateEndTime }}</strong></p>
+        </div>
 
-      <button @click="addLesson" :disabled="loading" class="w-full bg-blue-500 text-white px-4 py-2 rounded">
-        Добавить занятие
-      </button>
+        <div class="col-span-2">
+          <label class="text-sm text-gray-600">Кабинет</label>
+          <input v-model="classroom" class="w-full border p-2 rounded" placeholder="Введите кабинет" />
+        </div>
+      </div>
+
+      <div class="text-center mt-4">
+        <button @click="addLesson" :disabled="loading" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 hover:scale-105 transition">
+          Добавить занятие
+        </button>
+      </div>
     </div>
 
-    <ul class="space-y-3">
-      <li v-for="lesson in lessons" :key="lesson.id" class="flex justify-between items-center p-2 border rounded">
-        <span>
-          {{ lesson.subject }} - 
-          {{ days.find(d => d.id === lesson.day.id)?.day_name || 'Неизвестно' }} - 
-          {{ teachers.find(t => t.id === lesson.teacher.id)?.name || 'Неизвестно' }} 
-          ({{ lesson.lesson_starts_time.slice(0, 5) }} - {{ lesson.lesson_ends_time.slice(0, 5) }}) - {{ lesson.classroom }}
-        </span>
-        <div class="flex gap-2">
-          <button @click="openEditModal(lesson)" :disabled="loading" class="bg-yellow-500 text-white px-3 py-2 rounded">
+    <div class="text-center text-gray-500 mb-6">
+      Всего занятий: <strong>{{ lessons.length }}</strong>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div
+        v-for="lesson in lessons"
+        :key="lesson.id"
+        class="bg-white border rounded-lg shadow p-4 hover:shadow-lg transition-all duration-300 hover:scale-[1.02]"
+      >
+        <div class="text-gray-800 font-semibold text-lg">
+          {{ lesson.subject }}
+        </div>
+
+        <div class="text-sm text-gray-600 mt-1">
+          🗓️ {{ days.find(d => d.id === lesson.day.id)?.day_name || "Отсутствует" }}
+        </div>
+        <div class="text-sm text-gray-600">
+          👩‍🏫 {{ teachers.find(t => t.id === lesson.teacher.id)?.name || "Отсутствует" }}
+        </div>
+        <div class="text-sm text-gray-600">
+          ⏰ {{ lesson.lesson_starts_time.slice(0, 5) }} - {{ lesson.lesson_ends_time.slice(0, 5) }}
+        </div>
+        <div class="text-sm text-gray-600 mb-3">
+          🚪 {{ lesson.classroom }}
+        </div>
+
+        <div class="flex justify-end gap-2">
+          <button @click="openEditModal(lesson)" :disabled="loading" class="bg-yellow-500 text-white px-3 py-2 rounded hover:bg-yellow-600">
             <font-awesome-icon :icon="faPen" />
           </button>
-          <button @click="removeLesson(lesson.id)" :disabled="loading" class="bg-red-500 text-white px-3 py-2 rounded">
+          <button @click="removeLesson(lesson.id)" :disabled="loading" class="bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600">
             <font-awesome-icon :icon="faTrash" />
           </button>
         </div>
-      </li>
-    </ul>
-  </div>
+      </div>
+    </div>
 
-  <!-- Модальное окно редактирования -->
-  <div v-if="showEditModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-    <div class="bg-white p-6 rounded shadow-lg w-full max-w-md space-y-4 relative" v-if="lessonToEdit">
-      <h3 class="text-lg font-bold">Редактировать занятие</h3>
+    <!-- Редактирование урока -->
+    <div v-if="showEditModal" class="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
+      <div class="bg-white w-full max-w-md p-6 rounded-lg shadow-lg space-y-4 relative" v-if="lessonToEdit">
+        <h3 class="text-xl font-bold text-gray-800">✏️ Редактировать занятие</h3>
 
-      <label class="block text-sm">Предмет</label>
-      <select v-model="lessonToEdit.subject" class="w-full border p-2 rounded">
-        <option v-for="subject in subjects" :key="subject" :value="subject">{{ subject }}</option>
-      </select>
+        <label class="block text-sm">Предмет</label>
+        <select v-model="lessonToEdit.subject" class="w-full border p-2 rounded">
+          <option v-for="subject in subjects" :key="subject" :value="subject">{{ subject }}</option>
+        </select>
 
-      <label class="block text-sm">День</label>
-      <select v-model="lessonToEdit.day.id" class="w-full border p-2 rounded">
-        <option v-for="day in days" :key="day.id" :value="day.id">{{ day.day_name }}</option>
-      </select>
+        <label class="block text-sm">День</label>
+        <select v-model="lessonToEdit.day.id" class="w-full border p-2 rounded">
+          <option v-for="day in days" :key="day.id" :value="day.id">{{ day.day_name }}</option>
+        </select>
 
-      <label class="block text-sm">Преподаватель</label>
-      <select v-model="lessonToEdit.teacher.id" class="w-full border p-2 rounded">
-        <option v-for="teacher in teachers" :key="teacher.id" :value="teacher.id">{{ teacher.name }}</option>
-      </select>
+        <label class="block text-sm">Преподаватель</label>
+        <select v-model="lessonToEdit.teacher.id" class="w-full border p-2 rounded">
+          <option v-for="teacher in teachers" :key="teacher.id" :value="teacher.id">{{ teacher.name }}</option>
+        </select>
 
-      <label class="block text-sm">Время начала</label>
-      <select v-model="lessonToEdit.lesson_starts_time" class="w-full border p-2 rounded">
-        <option v-for="time in startTimes" :key="time" :value="time">{{ time }}</option>
-      </select>
 
-      <label class="block text-sm">Кабинет</label>
-      <input v-model="lessonToEdit.classroom" class="w-full border p-2 rounded" />
+        <label class="block text-sm">Время начала</label>
+        <select v-model="lessonToEdit.lesson_starts_time" class="w-full border p-2 rounded">
+          <option v-for="time in startTimes" :key="time" :value="time">{{ time }}</option>
+        </select>
 
-      <div class="flex justify-end gap-2 mt-4">
-        <button @click="submitLessonUpdate" class="bg-green-500 text-white px-4 py-2 rounded">Сохранить</button>
-        <button @click="closeEditModal" class="bg-gray-500 text-white px-4 py-2 rounded">Отмена</button>
+        <label class="block text-sm">Кабинет</label>
+        <input v-model="lessonToEdit.classroom" class="w-full border p-2 rounded" placeholder="Кабинет" />
+
+        <div class="flex justify-end gap-2 mt-2">
+          <button @click="submitLessonUpdate" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+            Сохранить
+          </button>
+          <button @click="closeEditModal" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
+            Отмена
+          </button>
+        </div>
       </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+select,
+input {
+  transition: border 0.3s, box-shadow 0.3s;
+}
+
+select:focus,
+input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3);
+}
+</style>

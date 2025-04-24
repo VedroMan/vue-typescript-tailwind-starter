@@ -64,45 +64,96 @@ onMounted(fetchGroups);
 </script>
 
 <template>
-  <div class="max-w-lg mx-auto bg-white p-6 rounded-lg shadow-md space-y-6">
-    <h2 class="text-xl font-bold">Управление группами</h2>
+  <div class="max-w-4xl mx-auto px-4 py-10">
+    <h2 class="text-3xl font-bold text-center text-gray-900 mb-4">👥 Группы</h2>
 
-    <div v-if="loading" class="text-center text-blue-500">Загрузка...</div>
-    <p v-if="errorMessage" class="text-red-500 text-center">{{ errorMessage }}</p>
-    <p v-if="message" class="text-green-500 text-center">{{ message }}</p>
+    <div v-if="loading" class="text-center text-blue-500 text-lg animate-pulse mb-4">Загрузка данных...</div>
+    <p v-if="errorMessage" class="text-center text-red-600 text-lg mb-4">{{ errorMessage }}</p>
+    <p v-if="message" class="text-center text-green-600 text-lg mb-4">{{ message }}</p>
 
-    <div class="space-y-4">
-      <label class="block text-sm font-medium text-gray-700">Группа</label>
-      <input v-model="groupName" class="border p-2 w-full rounded" placeholder="Введите название" />
-
-      <button @click="addGroup" :disabled="loading" class="w-full bg-blue-500 text-white px-4 py-2 rounded">
-        Добавить
+    <div class="bg-white border rounded-lg shadow p-6 mb-6 text-center space-y-4">
+      <input
+        v-model="groupName"
+        placeholder="Введите название группы"
+        class="w-full sm:w-2/3 mx-auto block px-4 py-2 border rounded-lg shadow focus:outline-none focus:ring focus:border-blue-300 transition"
+      />
+      <button
+        @click="addGroup"
+        :disabled="loading"
+        class="mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition hover:scale-105"
+      >
+      Добавить
       </button>
     </div>
 
-    <ul class="space-y-3">
-      <li v-for="group in groups" :key="group.id" class="flex justify-between items-center p-2 border rounded">
-        <div v-if="group.editing" class="flex w-full gap-2">
-          <input v-model="group.group_name" class="border p-1 rounded w-2/3" />
-          <button @click="editGroup(group)" :disabled="loading" class="bg-green-500 text-white px-4 py-2 rounded">
-            <font-awesome-icon :icon="faCheck" />
-          </button>
-          <button @click="group.editing = false" class="bg-gray-500 text-white px-4 py-2 rounded">
-            <font-awesome-icon :icon="faXmark" />
-          </button>
+    <div class="text-center text-gray-500 mb-6">
+      Всего групп: <strong>{{ groups.length }}</strong>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+      <div
+        v-for="group in groups"
+        :key="group.id"
+        class="bg-white border rounded-lg shadow-md p-4 transition-all duration-300 hover:shadow-lg hover:scale-[1.02]"
+      >
+        <div v-if="group.editing" class="space-y-2">
+          <input
+            v-model="group.group_name"
+            class="w-full border rounded px-2 py-1 focus:outline-none focus:ring focus:border-blue-400"
+          />
+          <div class="flex justify-end gap-2">
+            <button
+              @click="editGroup(group)"
+              :disabled="loading"
+              class="bg-green-500 text-white px-3 py-2 rounded hover:bg-green-600 transition"
+            >
+              <font-awesome-icon :icon="faCheck" />
+            </button>
+            <button
+              @click="group.editing = false"
+              class="bg-gray-400 text-white px-3 py-2 rounded hover:bg-gray-500 transition"
+            >
+              <font-awesome-icon :icon="faXmark" />
+            </button>
+          </div>
         </div>
-        <div v-else class="flex justify-between w-full items-center">
-          <span>{{ group.group_name }}</span>
-          <div class="flex gap-2">
-            <button @click="group.editing = true" :disabled="loading" class="bg-yellow-500 text-white px-3 py-2 rounded">
+
+        <div v-else class="flex flex-col justify-between h-full space-y-3">
+          <div class="text-blue-600 text-2xl flex items-center gap-2">
+            <span class="text-lg font-semibold text-gray-800">{{ group.group_name }}</span>
+          </div>
+          <div class="flex justify-end gap-2 mt-auto">
+            <button
+              @click="group.editing = true"
+              :disabled="loading"
+              class="bg-yellow-500 text-white px-3 py-2 rounded hover:bg-yellow-600 transition"
+            >
               <font-awesome-icon :icon="faPen" />
             </button>
-            <button @click="removeGroup(group.id)" :disabled="loading" class="bg-red-500 text-white px-3 py-2 rounded">
+            <button
+              @click="removeGroup(group.id)"
+              :disabled="loading"
+              class="bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600 transition"
+            >
               <font-awesome-icon :icon="faTrash" />
             </button>
           </div>
         </div>
-      </li>
-    </ul>
+      </div>
+    </div>
   </div>
 </template>
+
+<style scoped>
+select,
+input {
+  transition: border 0.3s, box-shadow 0.3s;
+}
+
+select:focus,
+input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3);
+}
+</style>

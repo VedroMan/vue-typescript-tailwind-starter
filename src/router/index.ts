@@ -8,6 +8,7 @@ import DayForm from "../views/DayForm.vue";
 import TeacherForm from "../views/TeacherForm.vue";
 import LessonForm from "../views/LessonForm.vue";
 import AdminLogin from "../views/AdminLogin.vue";
+import Users from "../views/Users.vue";
 import { ADMIN_PASS } from "../config";
 
 const routes = [
@@ -19,7 +20,8 @@ const routes = [
     { path: "/admin/group-form", name: "GroupForm", component: GroupForm },
     { path: "/admin/day-form", name: "DayForm", component: DayForm },
     { path: "/admin/teacher-form", name: "TeacherForm", component: TeacherForm },
-    { path: "/admin/lesson-form", name: "LessonForm", component: LessonForm }
+    { path: "/admin/lesson-form", name: "LessonForm", component: LessonForm },
+    { path: "/admin/telegram-users", name: "Users", component: Users }
 ];
 
 const router = createRouter({

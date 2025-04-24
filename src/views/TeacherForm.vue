@@ -1,7 +1,7 @@
 /* TeacherForm */
 
 <script setup lang="ts">
-import { faCheck, faXmark, faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faXmark, faPen, faTrash, faChalkboardTeacher } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { createTeacher, deleteTeacher, getTeachers, updateTeacher } from "../api/baseAPI";
 import { ref, onMounted } from "vue";
@@ -37,7 +37,7 @@ const addTeacher = async () => {
 };
 
 const removeTeacher = async (id: number) => {
-  if (!confirm("Вы уверены, что хотите удалить этого учителя?")) return;
+  if (!confirm("Вы уверены, что хотите удалить этого преподавателя?")) return;
   loading.value = true;
   try {
     await deleteTeacher(id, fetchTeachers);
@@ -64,45 +64,97 @@ onMounted(fetchTeachers);
 </script>
 
 <template>
-  <div class="max-w-lg mx-auto bg-white p-6 rounded-lg shadow-md space-y-6">
-    <h2 class="text-xl font-bold">Управление преподавателями</h2>
+  <div class="max-w-4xl mx-auto px-4 py-10">
+    <h2 class="text-3xl font-bold text-center text-gray-900 mb-4">👩‍🏫 Преподаватели</h2>
 
-    <div v-if="loading" class="text-center text-blue-500">Загрузка...</div>
-    <p v-if="errorMessage" class="text-red-500 text-center">{{ errorMessage }}</p>
-    <p v-if="message" class="text-green-500 text-center">{{ message }}</p>
+    <div v-if="loading" class="text-center text-blue-500 text-lg animate-pulse mb-4">Загрузка данных...</div>
+    <p v-if="errorMessage" class="text-center text-red-600 text-lg mb-4">{{ errorMessage }}</p>
+    <p v-if="message" class="text-center text-green-600 text-lg mb-4">{{ message }}</p>
 
-    <div class="space-y-4">
-      <label class="block text-sm font-medium text-gray-700">Имя преподавателя</label>
-      <input v-model="teacherName" class="border p-2 w-full rounded" placeholder="Введите имя" />
-
-      <button @click="addTeacher" :disabled="loading" class="w-full bg-blue-500 text-white px-4 py-2 rounded">
-        Добавить
+    <div class="bg-white border rounded-lg shadow p-6 mb-6 text-center space-y-4">
+      <input
+        v-model="teacherName"
+        placeholder="Введите имя преподавателя"
+        class="w-full sm:w-2/3 mx-auto block px-4 py-2 border rounded-lg shadow focus:outline-none focus:ring focus:border-blue-300 transition"
+      />
+      <button
+        @click="addTeacher"
+        :disabled="loading"
+        class="mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition hover:scale-105"
+      >
+      Добавить
       </button>
     </div>
 
-    <ul class="space-y-3">
-      <li v-for="teacher in teachers" :key="teacher.id" class="flex justify-between items-center p-2 border rounded">
-        <div v-if="teacher.editing" class="flex w-full gap-2">
-          <input v-model="teacher.name" class="border p-1 rounded w-2/3" />
-          <button @click="editTeacher(teacher)" :disabled="loading" class="bg-green-500 text-white px-4 py-2 rounded">
-            <font-awesome-icon :icon="faCheck" />
-          </button>
-          <button @click="teacher.editing = false" class="bg-gray-500 text-white px-4 py-2 rounded">
-            <font-awesome-icon :icon="faXmark" />
-          </button>
+    <div class="text-center text-gray-500 mb-6">
+      Всего преподавателей: <strong>{{ teachers.length }}</strong>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+      <div
+        v-for="teacher in teachers"
+        :key="teacher.id"
+        class="bg-white border rounded-lg shadow-md p-4 transition-all duration-300 hover:shadow-lg hover:scale-[1.02]"
+      >
+        <div v-if="teacher.editing" class="space-y-2">
+          <input
+            v-model="teacher.name"
+            class="w-full border rounded px-2 py-1 focus:outline-none focus:ring focus:border-blue-400"
+          />
+          <div class="flex justify-end gap-2">
+            <button
+              @click="editTeacher(teacher)"
+              :disabled="loading"
+              class="bg-green-500 text-white px-3 py-2 rounded hover:bg-green-600 transition"
+            >
+              <font-awesome-icon :icon="faCheck" />
+            </button>
+            <button
+              @click="teacher.editing = false"
+              class="bg-gray-400 text-white px-3 py-2 rounded hover:bg-gray-500 transition"
+            >
+              <font-awesome-icon :icon="faXmark" />
+            </button>
+          </div>
         </div>
-        <div v-else class="flex justify-between w-full items-center">
-          <span>{{ teacher.name }}</span>
-          <div class="flex gap-2">
-            <button @click="teacher.editing = true" :disabled="loading" class="bg-yellow-500 text-white px-3 py-2 rounded">
+
+        <div v-else class="flex flex-col justify-between h-full space-y-3">
+          <div class="text-blue-600 text-2xl flex items-center gap-2">
+            <font-awesome-icon :icon="faChalkboardTeacher" />
+            <span class="text-lg font-semibold text-gray-800">{{ teacher.name }}</span>
+          </div>
+          <div class="flex justify-end gap-2 mt-auto">
+            <button
+              @click="teacher.editing = true"
+              :disabled="loading"
+              class="bg-yellow-500 text-white px-3 py-2 rounded hover:bg-yellow-600 transition"
+            >
               <font-awesome-icon :icon="faPen" />
             </button>
-            <button @click="removeTeacher(teacher.id)" :disabled="loading" class="bg-red-500 text-white px-3 py-2 rounded">
+            <button
+              @click="removeTeacher(teacher.id)"
+              :disabled="loading"
+              class="bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600 transition"
+            >
               <font-awesome-icon :icon="faTrash" />
             </button>
           </div>
         </div>
-      </li>
-    </ul>
+      </div>
+    </div>
   </div>
 </template>
+
+<style scoped>
+select,
+input {
+  transition: border 0.3s, box-shadow 0.3s;
+}
+
+select:focus,
+input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3);
+}
+</style>

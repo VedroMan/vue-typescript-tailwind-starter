@@ -29,16 +29,20 @@ const isAdminPage = computed(() => route.path.startsWith("/admin"));
   </div>
 </template>
 
-<style scoped>
+<style lang="css">
 h1 {
   text-align: center;
 }
-ul {
-  list-style-type: none;
-  padding: 0;
+
+select,
+input {
+  transition: border 0.3s, box-shadow 0.3s;
 }
-li {
-  padding: 8px 0;
-  border-bottom: 1px solid #eee;
+
+select:focus,
+input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3);
 }
 </style>

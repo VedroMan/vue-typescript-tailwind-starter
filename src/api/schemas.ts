@@ -36,3 +36,11 @@ export interface Teacher {
 
     editing: boolean;
 }
+
+export interface User {
+    id: number;
+    telegram_id: number;
+    username: string | null;
+    first_name: string | null;
+    last_name: string | null;
+}

@@ -1,7 +1,7 @@
 /* CRUD операции с API */
 /* api.ts */
 
-import type { Day, Lesson, Teacher, Group } from './schemas';
+import type { Day, Lesson, Teacher, Group, User } from './schemas';
 
 /* MARK: Группы */
 
@@ -156,7 +156,7 @@ export const createTeacher = async (
     body: JSON.stringify({ name: teacherName.value }),
   });
   if (response.ok) {
-    message.value = "Учитель успешно добавлен!";
+    message.value = "Преподаватель успешно добавлен!";
     setTimeout(() => (message.value = ""), 3000);
     teacherName.value = "";
     await getTeachers();
@@ -332,4 +332,17 @@ export const filterLessonsByDay = (lessons: Lesson[]): Record<string, Lesson[]> 
   });
 
   return filteredLessons;
+};
+
+/* MARK: Пользователи */
+
+export const getTelegramUsers = async(
+  users: { value: User[] }
+) => {
+  const response = await fetch(`/api/users/telegram/`);
+  if (response.ok) {
+    users.value = await response.json();
+  } else {
+    throw new Error("Ошибка загрузки пользователей Telegram");
+  }
 };

@@ -44,6 +44,7 @@
 </template>
 
 <script setup lang="ts">
+import { faTelegram } from '@fortawesome/free-brands-svg-icons';
 import { faUsers, faCalendar, faChalkboardTeacher, faClipboardList } from '@fortawesome/free-solid-svg-icons';
 import { useRouter } from "vue-router";
 
@@ -54,6 +55,7 @@ const adminLinks = [
   { label: "Дни", path: "/admin/day-form", icon: faCalendar },
   { label: "Преподаватели", path: "/admin/teacher-form", icon: faChalkboardTeacher },
   { label: "Уроки", path: "/admin/lesson-form", icon: faClipboardList },
+  { label: "Пользователи", path: "/admin/telegram-users", icon: faTelegram }
 ];
 
 const logout = () => {
